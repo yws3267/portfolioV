@@ -5,8 +5,8 @@ import express, { Express } from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 
-const projectRoutes = require('../src/routes/projectRoutes')
-const technologyRoutes = require('../src/routes/technologyRoutes')
+const projectRoutes = require('./src/routes/projectRoutes')
+const technologyRoutes = require('./src/routes/technologyRoutes')
 
 const app: Express = express()
 
@@ -66,5 +66,11 @@ app.get('/', (req, res) => {
 
 app.use('/projects', projectRoutes.default || projectRoutes)
 app.use('/technologies', technologyRoutes.default || technologyRoutes)
+
+const PORT = process.env.PORT || 5000
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
 
 export default app

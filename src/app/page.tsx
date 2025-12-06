@@ -997,7 +997,7 @@ export default function Home() {
   const [hasError, setHasError] = useState(false)
 
   const EXPRESS_API_BASE_URL =
-    'https://portfolio-one-alpha-w9hs1lauqf.vercel.app/api'
+    process.env.NEXT_PUBLIC_EXPRESS_API_BASE_URL ?? 'http://localhost:5000'
 
   const { isLoaded, isSignedIn, user } = useUser()
   const { signOut } = useClerk()
@@ -1031,8 +1031,8 @@ export default function Home() {
       }
 
       const [fetchedProjects, fetchedTechStack] = await Promise.all([
-        fetchApi<Project>('/api/projects'),
-        fetchApi<Technology>('/api/technologies'),
+        fetchApi<Project>('/projects'),
+        fetchApi<Technology>('/technologies'),
       ])
 
       setProjects(fetchedProjects)
@@ -1079,7 +1079,7 @@ export default function Home() {
 
   const handleSaveProject = useCallback(
     async (projectData: Omit<Project, '_id'> & { _id?: string }) => {
-      const url = `${EXPRESS_API_BASE_URL}/api/projects`
+      const url = `${EXPRESS_API_BASE_URL}/projects`
       try {
         if (projectData._id) {
           await handleApiCall<Project>(
@@ -1116,7 +1116,7 @@ export default function Home() {
 
   const handleDeleteProject = useCallback(
     async (_id: string) => {
-      const url = `${EXPRESS_API_BASE_URL}/api/projects/${_id}`
+      const url = `${EXPRESS_API_BASE_URL}/projects/${_id}`
       try {
         await handleApiCall<{}>(url, 'DELETE')
         setProjects((prev) => prev.filter((p) => p._id !== _id))
@@ -1129,7 +1129,7 @@ export default function Home() {
 
   const handleSaveTechnology = useCallback(
     async (techData: Omit<Technology, '_id'> & { _id?: string }) => {
-      const url = `${EXPRESS_API_BASE_URL}/api/technologies`
+      const url = `${EXPRESS_API_BASE_URL}/technologies`
       try {
         if (techData._id) {
           await handleApiCall<Technology>(
@@ -1161,7 +1161,7 @@ export default function Home() {
 
   const handleDeleteTechnology = useCallback(
     async (_id: string) => {
-      const url = `${EXPRESS_API_BASE_URL}/api/technologies/${_id}`
+      const url = `${EXPRESS_API_BASE_URL}/technologies/${_id}`
       try {
         await handleApiCall<{}>(url, 'DELETE')
         setTechStack((prev) => prev.filter((t) => t._id !== _id))
