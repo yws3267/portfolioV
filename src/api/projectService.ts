@@ -1,6 +1,12 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:5000/api/projects'
+const API_BASE_URL = process.env.NEXT_PUBLIC_EXPRESS_API_BASE_URL
+
+if (!API_BASE_URL) {
+  throw new Error('NEXT_PUBLIC_EXPRESS_API_BASE_URL is not set')
+}
+
+const API_URL = `${API_BASE_URL}/projects`
 
 interface Project {
   _id: string
