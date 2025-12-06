@@ -1,12 +1,5 @@
 'use client'
 
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  ReactNode,
-} from 'react'
 import {
   Cpu,
   Code,
@@ -32,6 +25,15 @@ import {
   Mail,
   Layers,
 } from 'lucide-react'
+
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  ReactNode,
+} from 'react'
+
 import {
   useUser,
   useClerk,
