@@ -1,12 +1,6 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_EXPRESS_API_BASE_URL
-
-if (!API_BASE_URL) {
-  throw new Error('NEXT_PUBLIC_EXPRESS_API_BASE_URL is not set')
-}
-
-const API_URL = `${API_BASE_URL}/technologies`
+const API_URL = '/api/technologies'
 
 interface Technology {
   _id: string
