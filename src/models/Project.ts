@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import mongoose, { Document, Schema, models } from 'mongoose'
 
 export interface IProject extends Document {
   title: string
@@ -15,4 +15,7 @@ const ProjectSchema: Schema<IProject> = new Schema(
   { timestamps: true }
 )
 
-export default mongoose.model<IProject>('Project', ProjectSchema)
+const Project =
+  models.Project || mongoose.model<IProject>('Project', ProjectSchema)
+
+export default Project

@@ -308,7 +308,7 @@ const PortfolioLayout: React.FC<PortfolioLayoutProps> = ({
         <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-4" />
         <p className="text-red-600 font-semibold">데이터 로딩에 실패.</p>
         <p className="text-gray-500 text-sm">
-          백엔드 API 서버를 확인하거나 잠시 후 다시 시도 요망.
+          API 서버 상태를 확인하거나 잠시 후 다시 시도해 주세요.
         </p>
       </div>
     )
@@ -471,7 +471,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-              placeholder="프로젝트 이름"
+              placeholder="프로젝트 이름 입력"
               required
             />
           </div>
@@ -488,7 +488,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 min-h-[70px]"
-              placeholder="설명 입력"
+              placeholder="프로젝트 설명 입력"
               required
             />
           </div>
@@ -639,7 +639,7 @@ const TechnologyModal: React.FC<TechnologyModalProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500"
-              placeholder="예: React, Next.js, Python"
+              placeholder="기술 이름 입력"
               required
             />
           </div>
@@ -998,9 +998,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
 
-  const EXPRESS_API_BASE_URL =
-    process.env.NEXT_PUBLIC_EXPRESS_API_BASE_URL ?? 'http://localhost:5000'
-
   const { isLoaded, isSignedIn, user } = useUser()
   const { signOut } = useClerk()
 
@@ -1015,31 +1012,29 @@ export default function Home() {
       setIsLoading(true)
       setHasError(false)
 
-      const fetchApi = async <T,>(path: string): Promise<T[]> => {
-        try {
-          const url = `${EXPRESS_API_BASE_URL}${path}`
-          const response = await fetch(url)
-          if (!response.ok) {
-            throw new Error(
-              `HTTP error! status: ${response.status} from ${url}`
-            )
-          }
-          return (await response.json()) as T[]
-        } catch (error) {
-          console.error(`Failed to fetch data from ${path}:`, error)
-          setHasError(true)
-          return [] as T[]
+      try {
+        const [projectsRes, techRes] = await Promise.all([
+          fetch('/api/projects'),
+          fetch('/api/technologies'),
+        ])
+
+        if (!projectsRes.ok || !techRes.ok) {
+          throw new Error('API 응답 오류')
         }
+
+        const [fetchedProjects, fetchedTechStack] = await Promise.all([
+          projectsRes.json() as Promise<Project[]>,
+          techRes.json() as Promise<Technology[]>,
+        ])
+
+        setProjects(fetchedProjects)
+        setTechStack(fetchedTechStack)
+      } catch (error) {
+        console.error('초기 데이터 로딩 실패:', error)
+        setHasError(true)
+      } finally {
+        setIsLoading(false)
       }
-
-      const [fetchedProjects, fetchedTechStack] = await Promise.all([
-        fetchApi<Project>('/projects'),
-        fetchApi<Technology>('/technologies'),
-      ])
-
-      setProjects(fetchedProjects)
-      setTechStack(fetchedTechStack)
-      setIsLoading(false)
     }
 
     fetchData()
@@ -1071,7 +1066,7 @@ export default function Home() {
       } catch (error) {
         console.error('CRUD API Error:', error)
         alert(
-          '데이터 저장/삭제 중 오류 발생. Express 서버와 네트워크를 확인 요망.'
+          '데이터 저장/삭제 중 오류 발생. API 및 네트워크 상태를 확인해 주세요.'
         )
         throw error
       }
@@ -1081,7 +1076,7 @@ export default function Home() {
 
   const handleSaveProject = useCallback(
     async (projectData: Omit<Project, '_id'> & { _id?: string }) => {
-      const url = `${EXPRESS_API_BASE_URL}/projects`
+      const url = '/api/projects'
       try {
         if (projectData._id) {
           await handleApiCall<Project>(
@@ -1118,7 +1113,7 @@ export default function Home() {
 
   const handleDeleteProject = useCallback(
     async (_id: string) => {
-      const url = `${EXPRESS_API_BASE_URL}/projects/${_id}`
+      const url = `/api/projects/${_id}`
       try {
         await handleApiCall<{}>(url, 'DELETE')
         setProjects((prev) => prev.filter((p) => p._id !== _id))
@@ -1131,7 +1126,7 @@ export default function Home() {
 
   const handleSaveTechnology = useCallback(
     async (techData: Omit<Technology, '_id'> & { _id?: string }) => {
-      const url = `${EXPRESS_API_BASE_URL}/technologies`
+      const url = '/api/technologies'
       try {
         if (techData._id) {
           await handleApiCall<Technology>(
@@ -1163,7 +1158,7 @@ export default function Home() {
 
   const handleDeleteTechnology = useCallback(
     async (_id: string) => {
-      const url = `${EXPRESS_API_BASE_URL}/technologies/${_id}`
+      const url = `/api/technologies/${_id}`
       try {
         await handleApiCall<{}>(url, 'DELETE')
         setTechStack((prev) => prev.filter((t) => t._id !== _id))

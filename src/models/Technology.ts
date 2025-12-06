@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import mongoose, { Document, Schema, models } from 'mongoose'
 
 export interface ITechnology extends Document {
   name: string
@@ -7,19 +7,14 @@ export interface ITechnology extends Document {
 
 const TechnologySchema: Schema<ITechnology> = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-    iconName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    name: { type: String, required: true, trim: true },
+    iconName: { type: String, required: true },
   },
   { timestamps: true }
 )
 
-export default mongoose.model<ITechnology>('Technology', TechnologySchema)
+const Technology =
+  models.Technology ||
+  mongoose.model<ITechnology>('Technology', TechnologySchema)
+
+export default Technology
