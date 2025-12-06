@@ -996,7 +996,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(false)
 
-  const EXPRESS_API_BASE_URL = 'http://localhost:5000'
+  const EXPRESS_API_BASE_URL =
+    'https://portfolio-one-alpha-w9hs1lauqf.vercel.app/api'
 
   const { isLoaded, isSignedIn, user } = useUser()
   const { signOut } = useClerk()
